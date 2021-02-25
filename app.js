@@ -38,6 +38,40 @@ app.get('/getAll',(request,response)=>{
         
 });
 
+app.delete('/delete/:id', (request, response) => {
+    const { id } = request.params;
+    const db = dbService.getDbServiceInstance();
+    const result = db.deleteRowByID(id);
+
+    result
+        .then(data => response.json({ success: data }))
+        .catch(err => console.log(err));
+
+})
+
+app.patch('/update', (request, response) => {
+    const { id, name } = request.body;  
+    const db = dbService.getDbServiceInstance();
+
+    const result = db.updateNameByID(id , name);
+
+    result
+        .then(data => response.json({ success: data }))
+        .catch(err => console.log(err));
+});
+
+
+app.get('/search/:name', (request, response) => {
+    const { name } = request.params;
+    const db = dbService.getDbServiceInstance();
+    const result = db.searchByName(name);
+
+    result
+        .then(data => response.json({ data: data }))
+        .catch(err => console.log(err));
+    
+
+})
 
 app.listen(process.env.PORT , ()=>{
     console.log('app is running');

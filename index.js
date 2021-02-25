@@ -7,13 +7,73 @@ document.addEventListener('DOMContentLoaded', function(){
 
 document.querySelector('table tbody').addEventListener('click', function (e) {
   if (e.target.className === 'delete-row-btn') {
-    
+    //console.log(e.target);
+    deleteRowById(e.target.dataset.id);
   }
+  if (e.target.className === 'edit-row-btn') {
+    handleEditRow(e.target.dataset.id);
+  }
+  
+});
+
+const updateBtn = document.querySelector('#update-row-btn');
+
+
+function deleteRowById(id) {
+  fetch('http://localhost:5001/delete/' + id, {
+    method: 'DELETE'
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) location.reload(); 
+    });
+}
+
+function handleEditRow(id) {
+  const updateSection = document.querySelector('#update-row');
+  updateSection.hidden = false;
+  document.querySelector('#update-row').dataset.id = id;
+  //console.log(document.querySelector('#update-row'));
+}
+
+updateBtn.addEventListener('click', function () {
+  const updatedNameInput = document.querySelector('#update-name-input');
+  const updateSection = document.querySelector('#update-row');
+  
+  //console.log(updatedNameInput);
+  //console.log(updateSection.dataset.id, updatedNameInput.value);
+  
+  fetch('http://localhost:5001/update', {
+    
+    method: 'PATCH',
+    headers: {
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify({
+      id: updateSection.dataset.id,
+      name: updatedNameInput.value
+    })
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        location.reload();
+      }
+    })
 });
 
 
-
 const addBtn = document.querySelector('#add-name-btn');
+const searchBtn = document.querySelector('#search-btn');
+
+searchBtn.onclick = function () {
+  const searchValue = document.querySelector('#search-input').value;
+
+  fetch('http://localhost:5001/search/' + searchValue)
+    .then(response => response.json())
+    .then(data => loadHTMLTable(data['data']));
+
+}
    
 addBtn.onclick = function () {
     const nameInput = document.querySelector('#name-input');
