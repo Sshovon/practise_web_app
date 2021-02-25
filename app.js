@@ -13,8 +13,16 @@ app.use(express.urlencoded({extended : false}));
 
 
 app.post('/insert', (request,response)=>{
-    console.log('in insert')
-    console.log(request.body);
+    const { name } = request.body;
+    const db = dbService.getDbServiceInstance();
+    
+    const result = db.insertNewName(name);
+    //console.log(result);
+    result
+        .then(data => {
+            response.json({ data: data });
+         })
+        .catch(err => console.log(err));
 })
 
 app.get('/getAll',(request,response)=>{
@@ -22,7 +30,10 @@ app.get('/getAll',(request,response)=>{
     const db = dbService.getDbServiceInstance();
     const result = db.getAllData();
     result
-    .then(data =>response.json({data : data}))
+        .then(data => {
+            //console.log(typeof(response.json({ data: data })));
+            response.json({ data: data })
+        })
     .catch(err => console.log(err));
         
 });
@@ -30,4 +41,6 @@ app.get('/getAll',(request,response)=>{
 
 app.listen(process.env.PORT , ()=>{
     console.log('app is running');
+    
 });
+

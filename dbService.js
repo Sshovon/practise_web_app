@@ -40,6 +40,30 @@ class DbService {
             console.log(err);
         } 
     }
+
+    async insertNewName(name) {
+        try {
+            const dateAdded = new Date();
+            const insertID = await new Promise((resolve, reject) => {
+            
+                const query = 'INSERT INTO names (name,date_added) VALUES (?,?);';
+                connection.query(query, [name, dateAdded], (err, result) => {
+                    if (err) reject(new Error(err.message));
+                    resolve(result.insertId);
+                })
+                //console.log(insertID);
+            });
+            //console.log(insertID);
+            return {
+                id: insertID,
+                name: name,
+                dateAdded: dateAdded
+            };
+
+        }catch(err) {
+            console.log(err);
+        }
+    }
 }
 
 module.exports = DbService;

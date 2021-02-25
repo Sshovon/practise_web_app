@@ -4,6 +4,15 @@ document.addEventListener('DOMContentLoaded', function(){
   .then(data => loadHTMLTable(data['data']));
 });
 
+
+document.querySelector('table tbody').addEventListener('click', function (e) {
+  if (e.target.className === 'delete-row-btn') {
+    
+  }
+});
+
+
+
 const addBtn = document.querySelector('#add-name-btn');
    
 addBtn.onclick = function () {
@@ -19,10 +28,32 @@ addBtn.onclick = function () {
         body: JSON.stringify({ name : name})
     })
     .then(response => response.json())
-    .then(data => insertRowIntoTable(data['data']));
+      .then(data => {
+        insertRowIntoTable(data['data']);
+    });
 }
 
-function insertRowIntoTable(data){
+function insertRowIntoTable(data) {
+  
+  const table = document.querySelector('table tbody');
+  const isTableData = table.querySelector('.no-data');
+  let tableHtml = '<tr>';
+  for (key in data) {
+    if (data.hasOwnProperty(key)) {
+      if (key === 'dateAdded') data[key] = new Date(data[key]).toLocaleString();
+      tableHtml += `<td>${data[key]}</td>`;
+    }
+  }
+  tableHtml += `<td><button class='delete-row-btn' data-id=${data.id}>Delete</button></td>`;
+  tableHtml += `<td><button class='edit-row-btn' data-id=${data.id}>Edit</button></td>`;
+  tableHtml += '</tr>';
+
+  if (isTableData) {
+    table.innerHTML = tableHtml;
+  } else {
+    const newRow = table.insertRow();
+    newRow.innerHTML = tableHtml;
+  }
 
 }
 
@@ -30,6 +61,19 @@ function loadHTMLTable(data){
     const table =document.querySelector('table tbody');
     let tableHtml = "";
     if(data.length === 0){
-      table.innerHTML = "<tr> <td class ='no-data' colspan='5'> no data </td> </tr>";
+      table.innerHTML = "<tr> <td class ='no-data' colspan='5'> No Data </td> </tr>";
+      return;
     }
+  data.forEach(({ id, name, date_added }) => {
+      tableHtml += '<tr>';
+      tableHtml += `<td>${id}</td>`;
+      tableHtml += `<td>${name}</td>`;
+      tableHtml += `<td>${new Date(date_added).toLocaleString()}</td>`;
+      tableHtml += `<td><button class='delete-row-btn' data-id=${id}>Delete</button></td>`;
+      tableHtml += `<td><button class='edit-row-btn' data-id=${id}>Edit</button></td>`;
+      tableHtml += '</tr>'
+    
+  });
+  
+  table.innerHTML = tableHtml;
 }
